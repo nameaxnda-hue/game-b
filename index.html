@@ -237,6 +237,10 @@ body.myturn:after{content:"";position:fixed;inset:0;pointer-events:none;z-index:
 .ph2-main{flex:1;min-width:0}.ph2-nm{font-weight:800;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:24px}.ph2 .chip{font-size:.7rem;padding:0 6px}
 .rbar{height:8px;border-radius:99px;background:#0009;overflow:hidden;margin:4px 0}.rbar i{display:block;height:100%;background:linear-gradient(90deg,#43c59e,#ffe08a);transition:width .6s}
 .curp{display:flex;align-items:center;gap:10px}
+.pc.mys{--rc:#c77dff;--k:#3a2a78}.pc.mys:before{content:"";position:absolute;inset:-40%;background:conic-gradient(#c77dff66,#0000,#c77dff66,#0000);animation:spinr 3s linear infinite}.pc.mys>*{position:relative}
+.pc.mys .reel{height:1.25em;overflow:hidden;font-size:clamp(2.4rem,4vw,3.4rem);line-height:1.25;filter:drop-shadow(0 0 14px #c77dff);text-align:center;width:auto}
+.pc.mys .rl{animation:reelm .7s steps(14) infinite}.pc.mys .rl div{height:1.25em}@keyframes reelm{to{transform:translateY(-17.5em)}}
+.pc.mys.wide .reel{grid-row:2/5}
 </style></head>
 <body><button id="snd" class="g" onclick="togSnd()" style="position:fixed;right:10px;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);z-index:20;padding:8px 12px;background:var(--card)">🔊</button><div id="err" style="display:none;background:#d62f2f;color:#fff;padding:8px 12px;font-size:.9rem"></div><div id="app">กำลังเชื่อมต่อ…</div>
 <script>
@@ -375,9 +379,9 @@ async function haunt(){const p=P[uid],al=part().filter(i=>P[i].st=='ok');if(!al.
  const t=al[rnd(al.length)],q=P[t],q2={...q,ins:[...q.ins],cash:q.cash-1000};if(q2.cash<0)surr(q2);const u={cash:q2.cash,ins:q2.ins,hold:q2.hold||[]};if(q2.cash<0)u.st='broke';
  await db.doc('players/'+t).update(u);await db.doc('players/'+uid).update({ghost:p.ghost-1});
  await db.doc('game/main').update({log:[`👻 ${p.name} ปล่อยข่าวร้ายใส่ ${q.name} -1,000`,...(G.log||[])].slice(0,8)})}
-async function join(){if(G.phase!='lobby'){render();return}const n=document.getElementById('nm').value.trim().slice(0,12);if(!n)return;const J=JOBS[rnd(JOBS.length)];
- await db.doc('players/'+uid).set({name:n,pos:0,cash:J.cash,start:J.cash,job:J.id,ins:[],st:'ok',skip:0,ghost:3,cov:{},lap:0,debt:0,mission:MISSIONS[rnd(MISSIONS.length)].id,n:Date.now()});jobRoulette(J)}
-async function start(){const o=ids().filter(i=>P[i].st=='ok').sort(()=>Math.random()-.5);if(o.length<2)return;
+async function join(){if(G.phase!='lobby'){render();return}const n=document.getElementById('nm').value.trim().slice(0,12);if(!n)return;const J=JOBS[rnd(JOBS.length)];window.jobSpin=1;
+ await db.doc('players/'+uid).set({name:n,pos:0,cash:J.cash,start:J.cash,job:J.id,rv:false,ins:[],st:'ok',skip:0,ghost:3,cov:{},lap:0,debt:0,mission:MISSIONS[rnd(MISSIONS.length)].id,n:Date.now()});jobRoulette(J)}
+async function start(){if(ids().some(i=>P[i].rv===false))return;const o=ids().filter(i=>P[i].st=='ok').sort(()=>Math.random()-.5);if(o.length<2)return;
  await db.doc('game/main').set({phase:'play',order:o,turn:0,round:1,max:20,n0:o.length,log:['เริ่มเกม!'],mk:Array.from({length:21},()=>['bull','flat','bear'][rnd(3)])})}
 async function reset(){if(!arm){arm=true;render();return}arm=false;
  for(const i of ids())await db.doc('players/'+i).delete();await db.doc('game/main').set({phase:'lobby'})}
@@ -516,7 +520,7 @@ const JOBS=[
  {id:'teacher',n:'ครู',ic:'🧑‍🏫',cash:40000,o:'#2f7d5a',a:'#ffffff',hc:'#222',hat:'mortar',k:'#14532d',g:['📚','🍎','✏️','🎓']},
  {id:'artist',n:'ศิลปิน',ic:'🧑‍🎨',cash:38000,o:'#f4f0e6',a:'#c23b5a',hc:'#c23b5a',hat:'beret',k:'#9d174d',g:['🎨','🖌️','🖼️','✨']},
  {id:'farmer',n:'เกษตรกร',ic:'🧑‍🌾',cash:35000,o:'#3f6fb5',a:'#e0b64a',hc:'#e0b64a',hat:'straw',k:'#3f6212',g:['🌾','🚜','🐄','🥕']}];
-const JB=id=>JOBS.find(j=>j.id===id),jIc=p=>{const J=JB(p&&p.job);return J?J.ic+' ':''},jNm=p=>{const J=JB(p&&p.job);return J?J.n+' · ':''};
+const JB=id=>JOBS.find(j=>j.id===id),jIc=p=>{const J=p&&p.rv===false?null:JB(p&&p.job);return J?J.ic+' ':''},jNm=p=>{const J=p&&p.rv===false?null:JB(p&&p.job);return J?J.n+' · ':''};
 const rar=j=>j.cash>=80000?{n:'LEGENDARY',c:'#ffd34e',s:5}:j.cash>=60000?{n:'EPIC',c:'#c77dff',s:4}:j.cash>=45000?{n:'RARE',c:'#4fa3ff',s:3}:{n:'COMMON',c:'#9fb0c8',s:2};
 function hatSVG(J){const c=J.hc,k=J.a;switch(J.hat){
  case'helmet':return`<circle cx="100" cy="76" r="46" fill="#cfe8ff" fill-opacity=".32" stroke="#e8f4ff" stroke-width="5"/><path d="M62 70a40 40 0 0 1 20-32" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" opacity=".8"/><rect x="82" y="116" width="36" height="9" rx="4" fill="#ff6a3d"/>`;
@@ -536,7 +540,7 @@ function jobRoulette(J){const old=document.getElementById('jobr');if(old)old.rem
  o.innerHTML=`<div class="jr-rays"></div><div class="jr-top">🎲 กำลังสุ่มอาชีพของคุณ…</div><div class="jr-stage"><div class="jr-plat"></div><div class="jr-char" id="jrc"></div></div><div class="jr-rar" id="jrr">&nbsp;</div><div class="jr-name" id="jrn">???</div><div class="jr-cash" id="jrm">เงินเริ่มต้น ฿???</div><button id="jrb" style="display:none" onclick="document.getElementById('jobr').remove()">ลุยเลย! 🚀</button>`;
  document.body.appendChild(o);const ch=o.querySelector('#jrc'),nm=o.querySelector('#jrn'),rr=o.querySelector('#jrr'),mm=o.querySelector('#jrm'),bt=o.querySelector('#jrb'),sg=o.querySelector('.jr-stage'),n=28,ti=JOBS.findIndex(j=>j.id==J.id);let i=0;
  const st=j=>{ch.innerHTML=charSVG(j);nm.textContent=j.ic+' '+j.n;o.style.setProperty('--jc',j.k)};
- const fin=()=>setTimeout(()=>{const r=rar(J);st(J);ch.classList.add('done');o.style.setProperty('--jc',r.c);o.classList.add('shk');o.querySelector('.jr-top').textContent='🎉 คุณได้อาชีพ!';sfx('job');
+ const fin=()=>setTimeout(()=>{const r=rar(J);st(J);ch.classList.add('done');o.style.setProperty('--jc',r.c);o.classList.add('shk');o.querySelector('.jr-top').textContent='🎉 คุณได้อาชีพ!';sfx('job');window.jobSpin=0;try{db.doc('players/'+uid).update({rv:true})}catch(e){}
   rr.innerHTML='★'.repeat(r.s)+' '+r.n;rr.style.color=r.c;rr.classList.add('pop');nm.classList.add('pop','gold');o.insertAdjacentHTML('beforeend','<div class="fxflash"></div>');
   J.g.forEach((e,k)=>sg.insertAdjacentHTML('beforeend',`<i class="jr-gear" style="--a:${Math.round(k*360/J.g.length)}deg;--d:${k*.15}s">${e}</i>`));
   rain(o,J.g.concat(['✨','⭐']),40);bur(o,J.g.concat(['✨']),24,380);conf(o,r.s>=4?120:60);
@@ -546,7 +550,9 @@ FX.jobann=(s,d)=>{const J=JB(d.job);if(!J)return 1;const r=rar(J);sfx('job');FXH
  FXH(s,wrapH({who:d.who},`${J.ic} ได้เป็น ${J.n}!`,`<div class="fxchar">${charSVG(J)}</div><div class="bill" style="color:${r.c}">${'★'.repeat(r.s)} ${r.n}</div>`+N(J.cash,'เงินเริ่มต้น ฿')));return 3600};
 Object.assign(SFX,{tick:()=>tone(700+rnd(500),0,.05,'square',.05),job:()=>{[392,523,659,784,1047,1319].forEach((q,i)=>tone(q,i*.09,.3,'square',.07));noise(.4,.4,.3,3000);for(let i=0;i<8;i++)tone(1500+rnd(1500),.7+i*.07,.12,'triangle',.05)}});
 let pcSeen={};
-const pcard=(id,o={})=>{const p=P[id],J=JB(p.job),r=J?rar(J):{n:'NEW',c:'#9fb0c8',s:1},sn=pcSeen[id];pcSeen[id]=1;
+const REEL=JOBS.concat([JOBS[0]]).map(j=>`<div>${j.ic}</div>`).join('');
+const pcard=(id,o={})=>{const p=P[id],hid=p.rv===false,J=hid?null:JB(p.job),r=J?rar(J):{n:'NEW',c:'#9fb0c8',s:1},sn=pcSeen[id+(hid?'m':'r')];pcSeen[id+(hid?'m':'r')]=1;
+ if(hid)return`<div class="pc mys ${o.w?'wide':''} ${sn?'sn':''}" style="--d:${(o.i||0)*.12}s"><div class="pc-shine"></div><div class="pc-top"><span style="color:#c77dff">★ ★ ★</span><span>MYSTERY</span></div><div class="reel pc-char"><div class="rl">${REEL}</div></div><div class="pc-name">${esc(p.name)}</div><div class="pc-job dots">🎲 กำลังสุ่มอาชีพ<i>.</i><i>.</i><i>.</i></div><div class="pc-cash">฿ ? ? ?</div></div>`;
  return`<div class="pc ${o.w?'wide':''} ${sn?'sn':''}" style="--rc:${r.c};--k:${J?J.k:'#334'};--d:${(o.i||0)*.12}s"><div class="pc-shine"></div><div class="pc-top"><span style="color:${r.c}">${'★'.repeat(r.s)}</span><span>${r.n}</span></div><div class="pc-char">${J?charSVG(J):'<div style="font-size:3rem;text-align:center">🙂</div>'}</div><div class="pc-name">${esc(p.name)}</div><div class="pc-job">${J?J.ic+' '+J.n:'กำลังสุ่มอาชีพ…'}</div><div class="pc-cash">฿${f(p.cash)}</div></div>`};
 function hostLobby(){const L=ids(),n=L.length,u=location.origin+location.pathname+'?room='+room+'&role=player';
  const code=[...room].map((c,i)=>`<b style="--i:${i}">${esc(c)}</b>`).join('');
@@ -555,7 +561,7 @@ function hostLobby(){const L=ids(),n=L.length,u=location.origin+location.pathnam
  <div class="lob"><div class="b3" id="b3slot"></div><div class="lob-fx"></div><div class="lob-ui">
  <div class="lob-title"><small>PREMIUM LIFE STRATEGY</small><h1>เกมวางแผนชีวิต</h1></div>
  <div class="lob-join"><div class="lob-lbl">รหัสห้อง</div><div class="lob-code">${code}</div><img class="lob-qr" alt="QR" src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=0&data=${encodeURIComponent(u)}"><div class="lob-lbl">สแกนเพื่อเข้าห้อง</div></div>
- <div class="lob-bot"><div class="lob-cards">${L.map((id,i)=>pcard(id,{i})).join('')}${ph}</div><div class="lob-wait">${n<2?'<span class="dots">⏳ รอผู้เล่นเข้าห้อง<i>.</i><i>.</i><i>.</i></span>':`<button class="lob-go" onclick="start()">🚀 เริ่มเกม (${n} คน)</button>`}</div></div></div></div>`}
+ <div class="lob-bot"><div class="lob-cards">${L.map((id,i)=>pcard(id,{i})).join('')}${ph}</div><div class="lob-wait">${L.some(i=>P[i].rv===false)?'<span class="dots">🎲 มีผู้เล่นกำลังสุ่มอาชีพ — รอเฉลยก่อนนะ<i>.</i><i>.</i><i>.</i></span>':n<2?'<span class="dots">⏳ รอผู้เล่นเข้าห้อง<i>.</i><i>.</i><i>.</i></span>':`<button class="lob-go" onclick="start()">🚀 เริ่มเกม (${n} คน)</button>`}</div></div></div></div>`}
 function fwk(s,n){const C=['#ffd34e','#ff5f7a','#5fd4ff','#7dffb0','#c08cff'];for(let k=0;k<n;k++)setTimeout(()=>{const x=10+rnd(80)+'%',y=10+rnd(45)+'%',c=C[rnd(5)];let h='';for(let i=0;i<26;i++){const a=i/26*6.283,r=80+rnd(90);h+=`<i class="sp" style="left:${x};top:${y};background:${c};box-shadow:0 0 8px ${c};--x:${Math.cos(a)*r}px;--y:${Math.sin(a)*r}px"></i>`}FXH(s,h)},k*350)}
 function FXS(s,d){const O=(G.order&&G.order.length?G.order:ids()).filter(i=>P[i]),me=role=='player'?uid:null,J=me&&P[me]?JB(P[me].job):null,first=P[O[0]];
  FXH(s,'<div class="fxbg dark"></div><div class="rays2"></div><div class="cd"></div>');const cd=s.querySelector('.cd');
@@ -578,7 +584,9 @@ const AV=['🐱','🐶','🐰','🦊','🐼','🐯','🐸','🐵','🦄','🐧']
 const av=id=>esc(((P[id]||{}).name||'?').slice(0,1).toUpperCase());
 let disp={},stp={};
 let seen={},vd={};
-function sync(){ids().forEach(id=>{const p=P[id];if(disp[id]==null){disp[id]=p.pos;seen[id]=p.mvid;if(role=='host'&&G.phase=='lobby'&&p.job&&Date.now()-(p.n||0)<8000)fxQ('jobann',{who:p.name,job:p.job});return}if(stp[id])return;
+let rvPrev={};
+function sync(){ids().forEach(id=>{const p=P[id];const pr=rvPrev[id];rvPrev[id]=p.rv;if(role=='host'&&G.phase=='lobby'&&pr===false&&p.rv===true)fxQ('jobann',{who:p.name,job:p.job});if(role=='player'&&id==uid&&p.rv===false&&!window.jobSpin){try{db.doc('players/'+uid).update({rv:true})}catch(e){}}
+ if(disp[id]==null){disp[id]=p.pos;seen[id]=p.mvid;return}if(stp[id])return;
  if(disp[id]!=p.pos||(p.mvid!==seen[id]&&p.via!=null)){seen[id]=p.mvid;vd[id]=0;stp[id]=1;setTimeout(()=>step(id),1400)}else seen[id]=p.mvid})}
 function step(id){const p=P[id];if(!p){stp[id]=0;return}const c=disp[id],uv=p.via!=null&&!vd[id],t=uv?p.via:p.pos;
  if(c==t){if(uv){vd[id]=1;setTimeout(()=>step(id),900);return}stp[id]=0;render();return}
@@ -698,8 +706,8 @@ function init3d(){
   const b=new THREE.Mesh(new THREE.CylinderGeometry(.27,.3,.09,28),M3(c.clone().multiplyScalar(.7)));b.position.y=.045;b.castShadow=true;
   g.add(b,sph(.17,m,0,.3,0,1,1.15,.95),sph(.2,m,0,.6,0),sph(.07,m,-.17,.75,0),sph(.07,m,.17,.75,0),sph(.055,w,-.07,.62,.17),sph(.055,w,.07,.62,.17),sph(.026,k,-.07,.62,.215),sph(.026,k,.07,.62,.215),sph(.06,m,-.2,.3,.03),sph(.06,m,.2,.3,.03));
   const cv=document.createElement('canvas');cv.width=256;cv.height=96;const x=cv.getContext('2d');x.fillStyle=col(id);x.fillRect(0,8,256,80);
-  x.fillStyle='#fff';x.textAlign='center';x.font='bold 50px "IBM Plex Sans Thai",sans-serif';x.fillText(((JB((P[id]||{}).job)||{}).ic||'')+P[id].name.slice(0,6),128,66);
-  {const J=JB((P[id]||{}).job);if(J)jobGear(g,J)}const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),depthTest:false}));sp.scale.set(1.1,.41,1);sp.position.y=1.15;g.add(sp);
+  x.fillStyle='#fff';x.textAlign='center';x.font='bold 50px "IBM Plex Sans Thai",sans-serif';x.fillText(((P[id]||{}).rv===false?'🎲':((JB((P[id]||{}).job)||{}).ic||''))+P[id].name.slice(0,6),128,66);
+  {const hid=(P[id]||{}).rv===false;g.userData.ng=hid;const J=hid?null:JB((P[id]||{}).job);if(J)jobGear(g,J)}const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),depthTest:false}));sp.scale.set(1.1,.41,1);sp.position.y=1.15;g.add(sp);
   const rg=new THREE.Mesh(new THREE.TorusGeometry(.38,.035,8,32).rotateX(Math.PI/2),new THREE.MeshBasicMaterial({color:c}));rg.position.y=.06;g.add(rg);g.userData.rg=rg;sc.add(g);PW[id]=g};
  const diceMesh=n=>{const f=k=>{const c=document.createElement('canvas');c.width=c.height=128;const x=c.getContext('2d');x.fillStyle='#12243a';x.fillRect(0,0,128,128);x.fillStyle='rgba(240,213,138,.28)';x.fillRect(0,0,128,10);x.fillStyle='#f3d58a';
    PIPS[k].forEach(([a,b])=>{x.beginPath();x.arc(a*128,b*128,13,0,7);x.fill()});return M3(0xffffff,{map:new THREE.CanvasTexture(c),transparent:true,opacity:.93,clearcoat:1,roughness:.12})};
@@ -710,7 +718,7 @@ function init3d(){
  function frame(tm){requestAnimationFrame(frame);if(!wrap.isConnected)return;
   const w=wrap.clientWidth,h=wrap.clientHeight;if(w&&h&&(w!=W||h!=H)){W=w;H=h;R.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}
   if(G.phase=='lobby'&&drag==null)az+=.003;const a=az+Math.sin(tm/6000)*.12,ids3=part(),grp={};
-  ids3.forEach(id=>{if(!PW[id])mkPawn(id);const d=disp[id];if(d!=null)(grp[d]=grp[d]||[]).push(id)});
+  ids3.forEach(id=>{if(PW[id]&&PW[id].userData.ng&&P[id].rv!==false){sc.remove(PW[id]);delete PW[id]}if(!PW[id])mkPawn(id);const d=disp[id];if(d!=null)(grp[d]=grp[d]||[]).push(id)});
   Object.keys(PW).forEach(id=>{if(!ids3.includes(id)){sc.remove(PW[id]);delete PW[id]}});
   const curId=G.phase=='play'&&G.order?G.order[G.turn]:null;
   ids3.forEach(id=>{const g=PW[id],p=P[id],d=disp[id];if(d==null||!g)return;g.visible=p.st=='ok';
@@ -750,7 +758,7 @@ function play(){const p=P[uid];
  let act='';
  if(G.phase=='end')act=podium()+finalBtn();
  else if(out)act=`<div class="card"><h3>${ST[p.st]}</h3><div class="mut">คุณเป็นผีแล้ว ป่วนผู้เล่นที่ยังอยู่ได้ ${p.ghost} ครั้ง</div><button onclick="haunt()" ${p.ghost<1||busy?'disabled':''}>👻 ปล่อยข่าวร้าย (-1,000)</button></div>`;
- else if(G.phase=='lobby'){const J=JB(p.job),fr=ids().filter(i=>i!=uid);act=`<div class="card" style="padding:8px;text-align:center">${pcard(uid,{w:1})}<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:8px 0 4px">${fr.map(i=>`<span class="chip2">${jIc(P[i])}${esc(P[i].name)}</span>`).join('')||'<span class="mut">ยังไม่มีเพื่อนในห้อง</span>'}</div><div class="dots mut">👥 ในห้อง ${ids().length} คน · รอผู้ควบคุมเริ่มเกม<i>.</i><i>.</i><i>.</i></div>${J?`<button class="g" onclick="jobRoulette(JB('${J.id}'))">✨ ดูชุดอาชีพอีกครั้ง</button>`:''}</div>`}
+ else if(G.phase=='lobby'){const J=JB(p.job),fr=ids().filter(i=>i!=uid);act=`<div class="card" style="padding:8px;text-align:center">${pcard(uid,{w:1})}<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:8px 0 4px">${fr.map(i=>`<span class="chip2">${P[i].rv===false?'🎲 ':jIc(P[i])}${esc(P[i].name)}</span>`).join('')||'<span class="mut">ยังไม่มีเพื่อนในห้อง</span>'}</div><div class="dots mut">👥 ในห้อง ${ids().length} คน · รอผู้ควบคุมเริ่มเกม<i>.</i><i>.</i><i>.</i></div>${J?`<button class="g" onclick="jobRoulette(JB('${J.id}'))">✨ ดูชุดอาชีพอีกครั้ง</button>`:''}</div>`}
  else if(isTurn()){
   if(choice&&choice.t=='invest')act=`<div class="card"><h3>📈 ลงทุน ${f(STK)}</h3>${mbanner()}<div class="mut">ผลตอบแทนต่อรอบ (ตามสภาพตลาด)<br>เสี่ยงต่ำ: ▲ +10% · ▬ +3% · ▼ -4%<br>เสี่ยงสูง: ▲ +30% · ▬ +5% · ▼ -25%</div><button onclick="inv('lo')" ${p.cash<STK?'disabled':''}>เสี่ยงต่ำ</button><button onclick="inv('hi')" ${p.cash<STK?'disabled':''}>เสี่ยงสูง</button><button class="g" onclick="inv('no')">ข้าม</button></div>`;
   else if(choice)act=`<div class="card"><h3>🛡️ ซื้อประกัน</h3><div class="mut">สุขภาพ/อุบัติเหตุ จ่ายค่ารักษาตามวงเงิน · ชีวิต จ่ายทุนเมื่อเสียชีวิต</div>${Object.keys(PR).filter(k=>!p.ins.includes(k)).map(k=>`<button onclick="buy('${k}')" ${p.cash<PR[k]?'disabled':''}>${INS[k]} ฿${f(PR[k])}<br><small>${k=='sv'?'มูลค่าเพิ่มทุกรอบ':'คุ้มครอง '+f(CV[k])}</small></button>`).join('')}<button class="g" onclick="buy('no')">ไม่ซื้อ</button></div>`;
