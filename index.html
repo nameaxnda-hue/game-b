@@ -191,6 +191,17 @@ body.gv .lob-title h1{font-size:clamp(1.9rem,6vw,4.2rem);margin:0;font-weight:90
 .pc.ph{border-style:dashed;border-color:#ffffff44;box-shadow:none;background:#ffffff0c;animation:pcfl 2.4s ease-in-out infinite}
 .chip2{background:#ffffff14;border:1px solid #ffffff33;border-radius:99px;padding:2px 10px;font-size:.8rem}
 @media(max-width:700px){.lob-ui{grid-template-columns:1fr}.lob-title,.lob-bot{grid-column:1}.lob-join{flex-direction:row;flex-wrap:wrap;justify-content:center}.pc{width:clamp(96px,28vw,130px)}}
+/* ===== GAME START INTRO ===== */
+.rays2{position:absolute;inset:-60%;background:repeating-conic-gradient(#ffd34e22 0 6deg,#0000 6deg 14deg);animation:spinr 6s linear infinite}
+.cd{position:absolute;inset:0;display:grid;place-items:center;z-index:3}
+.cdn{font-size:clamp(8rem,42vw,18rem);font-weight:900;line-height:1;background:linear-gradient(#fff6c8,#ffc933 55%,#e28b00);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 8px 0 #6b3a00) drop-shadow(0 0 40px #ffb300);animation:cdp .9s ease-out both}
+@keyframes cdp{0%{transform:scale(2.6);opacity:0}25%{opacity:1}70%{transform:scale(1)}100%{transform:scale(.85);opacity:.2}}
+.cdr{position:absolute;left:50%;top:50%;width:30px;height:30px;margin:-15px;border:8px solid #ffd34e;border-radius:50%;animation:rg .9s ease-out both}
+.go{font-size:clamp(3rem,17vw,8rem);font-weight:900;line-height:1;background:linear-gradient(#fff,#ffe08a 40%,#ff9a1f);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 6px 0 #7a3b00) drop-shadow(0 0 36px #ff9a1f);animation:slam .8s cubic-bezier(.2,1.6,.4,1) both;letter-spacing:.04em}
+.ord{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:94vw;margin-top:6px}
+.oc{display:flex;align-items:center;gap:6px;padding:5px 12px 5px 6px;border-radius:99px;background:#0a1226dd;border:2px solid #d8b56a99;color:#fff;animation:pcin .5s calc(var(--i)*.1s + .5s) cubic-bezier(.2,1.5,.4,1) both}
+.oc.me{border-color:#ffd34e;box-shadow:0 0 22px #ffd34e;background:#3a2a05dd}
+.oc em{font-style:normal;font-weight:900;background:#ffd34e;color:#3a2600;border-radius:50%;width:1.7em;height:1.7em;display:grid;place-items:center;font-size:.85rem}
 </style></head>
 <body><button id="snd" class="g" onclick="togSnd()" style="position:fixed;right:10px;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);z-index:20;padding:8px 12px;background:var(--card)">🔊</button><div id="err" style="display:none;background:#d62f2f;color:#fff;padding:8px 12px;font-size:.9rem"></div><div id="app">กำลังเชื่อมต่อ…</div>
 <script>
@@ -419,7 +430,7 @@ const FX={
  win:(s,d)=>{sfx('win');setTimeout(()=>sfx('fire'),500);FXH(s,'<div class="fxbg dark"></div>');conf(s,120);const C=['#ffd34e','#ff5f7a','#5fd4ff','#7dffb0','#c08cff'];
   for(let k=0;k<9;k++)setTimeout(()=>{const x=15+rnd(70)+'%',y=15+rnd(40)+'%',c=C[rnd(5)];let h='';for(let i=0;i<28;i++){const a=i/28*6.283,r=90+rnd(90);h+=`<i class="sp" style="left:${x};top:${y};background:${c};box-shadow:0 0 8px ${c};--x:${Math.cos(a)*r}px;--y:${Math.sin(a)*r}px"></i>`}FXH(s,h)},k*450);
   FXH(s,wrapH({},'🎉 จบเกม! ประกาศผล',`<div class="fxbig">🏆</div>`));return 5200},
- start:(s,d)=>{sfx('start');FXH(s,'<div class="fxbg gold"></div>');FXH(s,wrapH({},'เริ่มเกม!',`<div class="fxbig">🎲</div>`));return 1800}};
+ start:(s,d)=>FXS(s,d)};
 Object.assign(SFX,{
  amb:()=>{for(let i=0;i<6;i++){tone(700,i*.5,.25,'sawtooth',.07,1000);tone(1000,i*.5+.25,.25,'sawtooth',.07,700)}},
  crash:()=>{noise(0,.5,.5,300);noise(.02,.35,.4,1200);tone(90,0,.5,'sine',.3,40)},
@@ -510,6 +521,17 @@ function hostLobby(){const L=ids(),n=L.length,u=location.origin+location.pathnam
  <div class="lob-title"><small>PREMIUM LIFE STRATEGY</small><h1>เกมวางแผนชีวิต</h1></div>
  <div class="lob-join"><div class="lob-lbl">รหัสห้อง</div><div class="lob-code">${code}</div><img class="lob-qr" alt="QR" src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=0&data=${encodeURIComponent(u)}"><div class="lob-lbl">สแกนเพื่อเข้าห้อง</div></div>
  <div class="lob-bot"><div class="lob-cards">${L.map((id,i)=>pcard(id,{i})).join('')}${ph}</div><div class="lob-wait">${n<2?'<span class="dots">⏳ รอผู้เล่นเข้าห้อง<i>.</i><i>.</i><i>.</i></span>':`<button class="lob-go" onclick="start()">🚀 เริ่มเกม (${n} คน)</button>`}</div></div></div></div>`}
+function fwk(s,n){const C=['#ffd34e','#ff5f7a','#5fd4ff','#7dffb0','#c08cff'];for(let k=0;k<n;k++)setTimeout(()=>{const x=10+rnd(80)+'%',y=10+rnd(45)+'%',c=C[rnd(5)];let h='';for(let i=0;i<26;i++){const a=i/26*6.283,r=80+rnd(90);h+=`<i class="sp" style="left:${x};top:${y};background:${c};box-shadow:0 0 8px ${c};--x:${Math.cos(a)*r}px;--y:${Math.sin(a)*r}px"></i>`}FXH(s,h)},k*350)}
+function FXS(s,d){const O=(G.order&&G.order.length?G.order:ids()).filter(i=>P[i]),me=role=='player'?uid:null,J=me&&P[me]?JB(P[me].job):null,first=P[O[0]];
+ FXH(s,'<div class="fxbg dark"></div><div class="rays2"></div><div class="cd"></div>');const cd=s.querySelector('.cd');
+ [3,2,1].forEach((n,i)=>setTimeout(()=>{cd.innerHTML=`<b class="cdn">${n}</b><i class="cdr"></i>`;sfx('boom');shk(.7)},i*900));
+ setTimeout(()=>{cd.remove();sfx('start');setTimeout(()=>sfx('fire'),400);shk(1.4);FXH(s,'<div class="fxflash"></div>');conf(s,110);fwk(s,7);
+  const mineFirst=me&&O[0]==me;
+  FXH(s,wrapH({},'',`<div class="go">START!</div>`+(J?`<div class="fxchar" style="width:min(26vw,150px)">${charSVG(J)}</div><div class="bill" style="color:#ffe08a">${J.ic} ${J.n} · ฿${f(P[me].cash)}</div>`:'')
+   +`<div class="ord">${O.map((id,i)=>`<div class="oc ${id==me?'me':''}" style="--i:${i}"><em>${i+1}</em>${jIc(P[id])}<b>${esc(P[id].name)}</b></div>`).join('')}</div>`
+   +`<div class="bill">${mineFirst?'🎲 ตาแรกเป็นของคุณ! ทอยเลย!':'▶ ตาแรก: '+esc(first?first.name:'')} · ${G.max||20} ตา · เป้าหมาย ฿${f(GOAL)}</div>`))},2700);
+ return 7200}
+Object.assign(SFX,{boom:()=>{tone(90,0,.35,'sine',.45,40);noise(0,.2,.35,700);tone(660,.02,.1,'square',.05)}});
 const IP={start:'M5 21V4M5 4h11l-2 4 2 4H5',luck:'M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.5l-5.4 3 1.2-6L3.3 9.3l6.1-.7z',bad:'M13 2L4 14h7l-1 8 9-12h-7z',skip:'M8 5v14M16 5v14',back:'M9 14L4 9l5-5M4 9h10a6 6 0 010 12h-3',invest:'M3 17l6-6 4 4 8-8M15 7h6v6',insure:'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z',accident:'M12 3l10 18H2zM12 10v5M12 18v.01',illness:'M9 4h6v5h5v6h-5v5H9v-5H4V9h5z'};
 const IC=Object.fromEntries(Object.entries(IP).map(([k,d])=>[k,`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="${d}"/></svg>`]));
 const AV=['🐱','🐶','🐰','🦊','🐼','🐯','🐸','🐵','🦄','🐧'];
