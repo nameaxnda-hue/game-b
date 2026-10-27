@@ -155,6 +155,42 @@ body.gv .hud{max-width:60%}.hud .event-card .mut{display:none}.hud .event-card{p
 #jobr button{position:relative;z-index:5;margin-top:6px;padding:14px 34px;font-size:1.2rem;animation:slam .6s both}
 #jobr .fl,#jobr .bu,#jobr .cf,#jobr .fxflash{pointer-events:none}
 .fxchar{width:min(40vw,210px);animation:slam .7s both;filter:drop-shadow(0 0 24px #ffd34e)}
+/* ===== LOBBY: หน้ารอเริ่มเกม ===== */
+.lob{position:relative;flex:1;min-height:0;border-radius:18px;overflow:hidden;border:1px solid #d8b56a66;box-shadow:0 0 40px #000a}
+.lob .b3{position:absolute;inset:0;border-radius:0}
+.lob-fx{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 120%,#ffd34e44,#0000 60%),linear-gradient(#04081ccc,#0000 28%,#0000 50%,#04081cdd);overflow:hidden}
+.lob-fx:before,.lob-fx:after{content:"";position:absolute;top:-25%;width:26%;height:150%;background:linear-gradient(90deg,#0000,#ffe9a866,#0000);transform-origin:50% 0;filter:blur(12px)}
+.lob-fx:before{left:12%;animation:beam1 7s ease-in-out infinite alternate}.lob-fx:after{right:12%;animation:beam2 8s ease-in-out infinite alternate}
+@keyframes beam1{from{transform:rotate(-26deg)}to{transform:rotate(-6deg)}}@keyframes beam2{from{transform:rotate(26deg)}to{transform:rotate(6deg)}}
+.lob-ui{position:absolute;inset:0;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto 1fr auto;gap:10px;padding:12px;pointer-events:none}
+.lob-title{grid-column:1/3;text-align:center}
+.lob-title small{display:block;letter-spacing:.5em;color:#ffe08a;font-weight:700;font-size:clamp(.6rem,1.4vw,.95rem);text-shadow:0 0 12px #ffb300}
+body.gv .lob-title h1{font-size:clamp(1.9rem,6vw,4.2rem);margin:0;font-weight:900;line-height:1.15;background:linear-gradient(100deg,#fff6c8 20%,#ffc933 38%,#fff 50%,#ffc933 62%,#e28b00 80%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shn2 3.2s linear infinite;filter:drop-shadow(0 4px 0 #6b3a00) drop-shadow(0 0 24px #ffb30088)}
+@keyframes shn2{from{background-position:150% 0}to{background-position:-100% 0}}
+.lob-join{grid-row:2;align-self:start;display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 14px;border-radius:18px;background:#0a1226b8;backdrop-filter:blur(8px);border:1px solid #d8b56a99;box-shadow:0 0 30px #000a}
+.lob-lbl{font-size:.8rem;letter-spacing:.2em;color:#e8ca86;text-align:center}
+.lob-code{display:flex;gap:7px}
+.lob-code b{width:clamp(40px,4.6vw,62px);height:clamp(52px,6vw,78px);display:grid;place-items:center;font-size:clamp(1.7rem,3.4vw,2.9rem);font-weight:900;color:#3a2600;background:linear-gradient(#fff3b8,#ffc933 55%,#d9962a);border-radius:12px;box-shadow:0 5px 0 #8a5a10,0 0 26px #ffb30099;animation:pcin .7s calc(var(--i)*.12s) cubic-bezier(.2,1.6,.4,1) both,tilt 3s calc(var(--i)*.25s + 1s) ease-in-out infinite}
+@keyframes tilt{50%{transform:translateY(-5px) rotate(2deg)}}
+.lob-qr{width:clamp(100px,13vw,150px);background:#fff;padding:6px;border-radius:12px;box-shadow:0 0 24px #ffd34e88}
+.lob-bot{grid-column:1/3;grid-row:3;display:flex;flex-direction:column;align-items:center;gap:8px}
+.lob-cards{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;max-height:46vh;overflow:hidden}
+.lob-wait{pointer-events:auto;color:#fff;font-weight:700;text-shadow:0 2px 6px #000}
+.dots i{display:inline-block;font-style:normal;animation:dt 1.2s infinite}.dots i:nth-child(2){animation-delay:.2s}.dots i:nth-child(3){animation-delay:.4s}@keyframes dt{50%{opacity:.2;transform:translateY(-5px)}}
+.lob-go{font-size:clamp(1.1rem,2.4vw,1.6rem)!important;padding:14px 44px!important;border-radius:999px!important;background:linear-gradient(#ffe08a,#d9962a)!important;color:#3a2600!important;font-weight:900;box-shadow:0 0 0 0 #ffd34e99,0 6px 0 #8a5a10;animation:gop 1.4s infinite}
+@keyframes gop{70%{box-shadow:0 0 0 26px #0000,0 6px 0 #8a5a10}}
+.pc{position:relative;width:clamp(116px,12.5vw,168px);padding:8px 8px 10px;border-radius:16px;background:linear-gradient(160deg,color-mix(in srgb,var(--k,#334) 70%,#000),#0a1226 85%);border:3px solid var(--rc,#9fb0c8);box-shadow:0 0 22px color-mix(in srgb,var(--rc,#9fb0c8) 70%,transparent),inset 0 0 18px #ffffff18;color:#fff;text-align:center;overflow:hidden;animation:pcin .7s var(--d,0s) cubic-bezier(.2,1.5,.4,1) both,pcfl 3.4s calc(var(--d,0s) + .8s) ease-in-out infinite}
+.pc.sn{animation:pcfl 3.4s ease-in-out infinite}
+@keyframes pcin{from{transform:translateY(120%) rotate(-12deg) scale(.5);opacity:0}to{transform:none;opacity:1}}@keyframes pcfl{50%{transform:translateY(-6px)}}
+.pc-shine{position:absolute;inset:0;background:linear-gradient(115deg,#0000 30%,#ffffff66 45%,#0000 60%);background-size:250% 100%;animation:shn2 2.6s linear infinite;pointer-events:none;mix-blend-mode:overlay;z-index:2}
+.pc-top{display:flex;justify-content:space-between;font-size:.6rem;font-weight:800;letter-spacing:.08em;color:#cfd8e8}
+.pc-char{width:70%;margin:2px auto;filter:drop-shadow(0 6px 8px #000a)}
+.pc-name{font-weight:800;font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pc-job{font-size:.72rem;color:#d7e1f2}.pc-cash{font-weight:900;color:#ffe08a;font-size:1rem}
+.pc.wide{width:100%;display:grid;grid-template-columns:32% 1fr;text-align:left;align-items:center;gap:2px 10px}.pc.wide .pc-top{grid-column:1/3}.pc.wide .pc-char{width:100%;grid-row:2/5}
+.pc.ph{border-style:dashed;border-color:#ffffff44;box-shadow:none;background:#ffffff0c;animation:pcfl 2.4s ease-in-out infinite}
+.chip2{background:#ffffff14;border:1px solid #ffffff33;border-radius:99px;padding:2px 10px;font-size:.8rem}
+@media(max-width:700px){.lob-ui{grid-template-columns:1fr}.lob-title,.lob-bot{grid-column:1}.lob-join{flex-direction:row;flex-wrap:wrap;justify-content:center}.pc{width:clamp(96px,28vw,130px)}}
 </style></head>
 <body><button id="snd" class="g" onclick="togSnd()" style="position:fixed;right:10px;bottom:calc(env(safe-area-inset-bottom,0px) + 10px);z-index:20;padding:8px 12px;background:var(--card)">🔊</button><div id="err" style="display:none;background:#d62f2f;color:#fff;padding:8px 12px;font-size:.9rem"></div><div id="app">กำลังเชื่อมต่อ…</div>
 <script>
@@ -463,6 +499,17 @@ function jobRoulette(J){const old=document.getElementById('jobr');if(old)old.rem
 FX.jobann=(s,d)=>{const J=JB(d.job);if(!J)return 1;const r=rar(J);sfx('job');FXH(s,`<div class="fxbg gold"></div>`);rain(s,J.g.concat(['✨']),24);bur(s,J.g,14,300);
  FXH(s,wrapH({who:d.who},`${J.ic} ได้เป็น ${J.n}!`,`<div class="fxchar">${charSVG(J)}</div><div class="bill" style="color:${r.c}">${'★'.repeat(r.s)} ${r.n}</div>`+N(J.cash,'เงินเริ่มต้น ฿')));return 3600};
 Object.assign(SFX,{tick:()=>tone(700+rnd(500),0,.05,'square',.05),job:()=>{[392,523,659,784,1047,1319].forEach((q,i)=>tone(q,i*.09,.3,'square',.07));noise(.4,.4,.3,3000);for(let i=0;i<8;i++)tone(1500+rnd(1500),.7+i*.07,.12,'triangle',.05)}});
+let pcSeen={};
+const pcard=(id,o={})=>{const p=P[id],J=JB(p.job),r=J?rar(J):{n:'NEW',c:'#9fb0c8',s:1},sn=pcSeen[id];pcSeen[id]=1;
+ return`<div class="pc ${o.w?'wide':''} ${sn?'sn':''}" style="--rc:${r.c};--k:${J?J.k:'#334'};--d:${(o.i||0)*.12}s"><div class="pc-shine"></div><div class="pc-top"><span style="color:${r.c}">${'★'.repeat(r.s)}</span><span>${r.n}</span></div><div class="pc-char">${J?charSVG(J):'<div style="font-size:3rem;text-align:center">🙂</div>'}</div><div class="pc-name">${esc(p.name)}</div><div class="pc-job">${J?J.ic+' '+J.n:'กำลังสุ่มอาชีพ…'}</div><div class="pc-cash">฿${f(p.cash)}</div></div>`};
+function hostLobby(){const L=ids(),n=L.length,u=location.origin+location.pathname+'?room='+room+'&role=player';
+ const code=[...room].map((c,i)=>`<b style="--i:${i}">${esc(c)}</b>`).join('');
+ const ph=Array.from({length:Math.max(0,4-n)},()=>'<div class="pc ph"><div class="pc-char" style="font-size:3rem;opacity:.5;text-align:center">❔</div><div class="pc-name">ว่าง</div><div class="pc-job">รอผู้เล่น…</div></div>').join('');
+ return`<div class="row hh"><div class="mut">ห้อง <b>${room}</b> · 👥 ${n} คน</div><div><button class="g" onclick="reset()">${arm?'กดอีกครั้งเพื่อยืนยัน':'รีเซ็ต'}</button></div></div>
+ <div class="lob"><div class="b3" id="b3slot"></div><div class="lob-fx"></div><div class="lob-ui">
+ <div class="lob-title"><small>PREMIUM LIFE STRATEGY</small><h1>เกมวางแผนชีวิต</h1></div>
+ <div class="lob-join"><div class="lob-lbl">รหัสห้อง</div><div class="lob-code">${code}</div><img class="lob-qr" alt="QR" src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=0&data=${encodeURIComponent(u)}"><div class="lob-lbl">สแกนเพื่อเข้าห้อง</div></div>
+ <div class="lob-bot"><div class="lob-cards">${L.map((id,i)=>pcard(id,{i})).join('')}${ph}</div><div class="lob-wait">${n<2?'<span class="dots">⏳ รอผู้เล่นเข้าห้อง<i>.</i><i>.</i><i>.</i></span>':`<button class="lob-go" onclick="start()">🚀 เริ่มเกม (${n} คน)</button>`}</div></div></div></div>`}
 const IP={start:'M5 21V4M5 4h11l-2 4 2 4H5',luck:'M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.5l-5.4 3 1.2-6L3.3 9.3l6.1-.7z',bad:'M13 2L4 14h7l-1 8 9-12h-7z',skip:'M8 5v14M16 5v14',back:'M9 14L4 9l5-5M4 9h10a6 6 0 010 12h-3',invest:'M3 17l6-6 4 4 8-8M15 7h6v6',insure:'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z',accident:'M12 3l10 18H2zM12 10v5M12 18v.01',illness:'M9 4h6v5h5v6h-5v5H9v-5H4V9h5z'};
 const IC=Object.fromEntries(Object.entries(IP).map(([k,d])=>[k,`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="${d}"/></svg>`]));
 const AV=['🐱','🐶','🐰','🦊','🐼','🐯','🐸','🐵','🦄','🐧'];
@@ -599,7 +646,7 @@ function init3d(){
  R.domElement.addEventListener('pointermove',e=>{if(drag!=null){az-=(e.clientX-drag)*.008;drag=e.clientX}});
  function frame(tm){requestAnimationFrame(frame);if(!wrap.isConnected)return;
   const w=wrap.clientWidth,h=wrap.clientHeight;if(w&&h&&(w!=W||h!=H)){W=w;H=h;R.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}
-  const a=az+Math.sin(tm/6000)*.12,ids3=part(),grp={};
+  if(G.phase=='lobby'&&drag==null)az+=.003;const a=az+Math.sin(tm/6000)*.12,ids3=part(),grp={};
   ids3.forEach(id=>{if(!PW[id])mkPawn(id);const d=disp[id];if(d!=null)(grp[d]=grp[d]||[]).push(id)});
   Object.keys(PW).forEach(id=>{if(!ids3.includes(id)){sc.remove(PW[id]);delete PW[id]}});
   const curId=G.phase=='play'&&G.order?G.order[G.turn]:null;
@@ -623,6 +670,7 @@ function init3d(){
  requestAnimationFrame(frame);return wrap}
 function mount3d(){if(typeof THREE=='undefined')return;if(!W3)W3=init3d();const sl=document.getElementById('b3slot');if(sl)sl.prepend(W3)}
 function host(){
+ if(G.phase=='lobby'&&typeof THREE!='undefined')return hostLobby();
  const cells=cellsHtml();
  const cur=G.phase=='play'?P[G.order[G.turn]]:null;
  const mid=`<div class="mid card"><h2>ตาที่ ${G.round||0}/${G.max||20}</h2><div class="mut">เป้าหมาย ฿${f(GOAL)} หรืออยู่รอดสูงสุด</div>${G.phase=='play'?mbanner():''}${cur?`<div class="big" style="color:${col(G.order[G.turn])}">▶ ${esc(cur.name)}</div>`:`<div class="mut">${G.phase=='end'?'จบเกม':'รอผู้เล่น…'}</div>`}${logs(3)}</div>`;
@@ -638,7 +686,7 @@ function play(){const p=P[uid];
  let act='';
  if(G.phase=='end')act=podium()+finalBtn();
  else if(out)act=`<div class="card"><h3>${ST[p.st]}</h3><div class="mut">คุณเป็นผีแล้ว ป่วนผู้เล่นที่ยังอยู่ได้ ${p.ghost} ครั้ง</div><button onclick="haunt()" ${p.ghost<1||busy?'disabled':''}>👻 ปล่อยข่าวร้าย (-1,000)</button></div>`;
- else if(G.phase=='lobby'){const J=JB(p.job);act=`<div class="card" style="text-align:center">${J?`<div style="width:130px;margin:auto">${charSVG(J)}</div><h3>${J.ic} ${J.n}</h3><div class="mut">เงินเริ่มต้น ฿${f(p.cash)}</div><button class="g" onclick="jobRoulette(JB('${J.id}'))">✨ ดูชุดอาชีพอีกครั้ง</button>`:''}<div class="mut">รอผู้ควบคุมเริ่มเกม…</div></div>`}
+ else if(G.phase=='lobby'){const J=JB(p.job),fr=ids().filter(i=>i!=uid);act=`<div class="card" style="padding:8px;text-align:center">${pcard(uid,{w:1})}<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:8px 0 4px">${fr.map(i=>`<span class="chip2">${jIc(P[i])}${esc(P[i].name)}</span>`).join('')||'<span class="mut">ยังไม่มีเพื่อนในห้อง</span>'}</div><div class="dots mut">👥 ในห้อง ${ids().length} คน · รอผู้ควบคุมเริ่มเกม<i>.</i><i>.</i><i>.</i></div>${J?`<button class="g" onclick="jobRoulette(JB('${J.id}'))">✨ ดูชุดอาชีพอีกครั้ง</button>`:''}</div>`}
  else if(isTurn()){
   if(choice&&choice.t=='invest')act=`<div class="card"><h3>📈 ลงทุน ${f(STK)}</h3>${mbanner()}<div class="mut">ผลตอบแทนต่อรอบ (ตามสภาพตลาด)<br>เสี่ยงต่ำ: ▲ +10% · ▬ +3% · ▼ -4%<br>เสี่ยงสูง: ▲ +30% · ▬ +5% · ▼ -25%</div><button onclick="inv('lo')" ${p.cash<STK?'disabled':''}>เสี่ยงต่ำ</button><button onclick="inv('hi')" ${p.cash<STK?'disabled':''}>เสี่ยงสูง</button><button class="g" onclick="inv('no')">ข้าม</button></div>`;
   else if(choice)act=`<div class="card"><h3>🛡️ ซื้อประกัน</h3><div class="mut">สุขภาพ/อุบัติเหตุ จ่ายค่ารักษาตามวงเงิน · ชีวิต จ่ายทุนเมื่อเสียชีวิต</div>${Object.keys(PR).filter(k=>!p.ins.includes(k)).map(k=>`<button onclick="buy('${k}')" ${p.cash<PR[k]?'disabled':''}>${INS[k]} ฿${f(PR[k])}<br><small>${k=='sv'?'มูลค่าเพิ่มทุกรอบ':'คุ้มครอง '+f(CV[k])}</small></button>`).join('')}<button class="g" onclick="buy('no')">ไม่ซื้อ</button></div>`;
